@@ -1,0 +1,8 @@
+{
+    "start": "Hi! Use /info to check your balance.",
+    "info.not_found": "Your ID was not found.",
+    "info.result": "Balance: <b>{balance} ₽</b>\nTariff: <b>{tariff} ₽</b> per month",
+    "error": "An error occurred. Please try again later.",
+    "cmd.info": "My balance",
+    "unknown": "Use /info to check your balance."
+}
