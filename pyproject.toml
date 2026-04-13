@@ -1,0 +1,22 @@
+[project]
+name = "vpn-bot"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "aiogoogle>=5.17.0",
+    "aiogram>=3.27.0",
+    "aiohttp-socks>=0.11.0",
+    "pydantic-settings>=2.13.1",
+]
+
+[dependency-groups]
+dev = ["cli-tools", "isort>=8.0.1"]
+
+[tool.uv.sources]
+cli-tools = { git = "https://github.com/w1vern/cli_tools" }
+
+[tool.isort]
+profile = "black"
+line_length = 70
+multi_line_output = 3
+include_trailing_comma = false
