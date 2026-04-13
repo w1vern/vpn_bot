@@ -7,7 +7,10 @@ from aiogoogle.auth.creds import ServiceAccountCreds
 from aiogoogle.sessions.aiohttp_session import AiohttpSession
 
 from bot.env import env_config
+from bot.logger import setup_logger
 from bot.redis import get_redis_client
+
+logger = setup_logger(__name__)
 
 _creds: ServiceAccountCreds | None = None
 
@@ -42,7 +45,7 @@ def _parse_row(row: list[str]) -> UserInfo:
         balance=row[5].replace(",", "."),
         first_pay=row[7],
         tariff=row[8].replace(",", "."),
-        last_pay=""  # TODO: add to table
+        last_pay=row[10]
     )
 
 
@@ -92,13 +95,14 @@ async def _fetch_all_users() -> dict[str, UserInfo]:
         clients = await g.as_service_account(
             sheets.spreadsheets.values.get(
                 spreadsheetId=env_config.spreadsheet_id,
-                range="Расчет!A2:J",
+                range="copy_for_bot!A2:K",
             )
         )
 
         users: dict[str, UserInfo] = {}
-        for row in clients.get("values", []):
-            if len(row) >= 10 and row[9]:
+        values = clients.get("values", [])
+        for row in values:
+            if len(row) >= 11 and row[9]:
                 users[row[9]] = _parse_row(row)
 
         return users
