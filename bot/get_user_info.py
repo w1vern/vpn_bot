@@ -38,14 +38,14 @@ class UserInfo():
     tariff: str
 
 
-def _parse_row(row: list[str]) -> UserInfo:
+def _parse_row(row: list[object]) -> UserInfo:
     return UserInfo(
-        id=row[9],
-        username=row[0],
-        balance=row[5].replace(",", "."),
-        first_pay=row[7],
-        tariff=row[8].replace(",", "."),
-        last_pay=row[10]
+        id=str(row[9]),
+        username=str(row[0]),
+        balance=str(row[5]).replace(",", "."),
+        first_pay=str(row[7]),
+        tariff=str(row[8]).replace(",", "."),
+        last_pay=str(row[10])
     )
 
 
@@ -62,6 +62,7 @@ async def _get_all_users() -> dict[str, UserInfo]:
 
         users = await _fetch_all_users()
 
+        logger.debug(env_config.redis.cache_lifetime)
         await redis.set(
             _CACHE_KEY,
             json.dumps({uid: asdict(info) for uid, info in users.items()}),
@@ -95,7 +96,8 @@ async def _fetch_all_users() -> dict[str, UserInfo]:
         clients = await g.as_service_account(
             sheets.spreadsheets.values.get(
                 spreadsheetId=env_config.spreadsheet_id,
-                range="copy_for_bot!A2:K",
+                range="Расчет!A2:K",
+                #valueRenderOption="UNFORMATTED_VALUE",
             )
         )
 
@@ -103,6 +105,7 @@ async def _fetch_all_users() -> dict[str, UserInfo]:
         values = clients.get("values", [])
         for row in values:
             if len(row) >= 11 and row[9]:
+                logger.debug(row)
                 users[row[9]] = _parse_row(row)
 
         return users

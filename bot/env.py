@@ -2,7 +2,7 @@
 import os
 from enum import Enum
 
-from pydantic import BaseModel, field_validator
+from pydantic import AliasPath, BaseModel, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -12,16 +12,15 @@ class BootLevel(str, Enum):
 
 
 class RedisSettings(BaseModel):
-    model_config = SettingsConfigDict(
-        populate_by_name=True)
+    model_config = SettingsConfigDict(populate_by_name=True)
 
     ip: str = ""
     port: int = 0
     login: str | None = None
     password: str | None = None
     backend: int = 0
-    bot: int = 1
-    cache_lifetime: int = 300
+    bot: int = 0
+    cache_lifetime: int = Field(default=0, validation_alias=AliasPath("cache", "lifetime"))
 
 
 class Settings(BaseSettings):
